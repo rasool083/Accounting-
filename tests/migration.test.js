@@ -6,7 +6,7 @@ test('migration preserves core arrays and adds normalized collections', () => {
   const out = Migration.normalize({people:[{id:'p1'}], sales:[{id:'s1'}]});
   assert.deepEqual(out.people, [{id:'p1'}]);
   assert.deepEqual(out.sales, [{id:'s1'}]);
-  for (const key of ['products','prices','receipts','payments','checks','purchases','expenses','incomes','audit']) assert.ok(Array.isArray(out[key]));
+  for (const key of ['products','prices','receipts','payments','checks','purchases','expenses','incomes','audit','operations','effects','receiptAllocations']) assert.ok(Array.isArray(out[key]));
 });
 
 test('migration preserves unknown root properties', () => {
