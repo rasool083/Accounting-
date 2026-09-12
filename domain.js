@@ -55,12 +55,18 @@
       return x.customerId===customerId&&x.status!=="باطل"&&x.status!=="برگشتی"&&parseJ(x.jDate)&&String(x.jDate)<=String(input.calcDate)
     }).slice();
     receipts.sort(function(a,b){return String(a.jDate).localeCompare(String(b.jDate))||String(a.id).localeCompare(String(b.id))});
-    var alloc=sales.map(function(s){return {sale:s,orig:Number(s.amount)||0,remaining:Number(s.amount)||0,days:0,mult:1,settlement:0,interest:0}}),credit=0;
+    var alloc=sales.map(function(s){return {sale:s,orig:Number(s.amount)||0,remaining:Number(s.amount)||0,days:0,mult:1,settlement:0,interest:0}}),credit=0,receiptAllocations=[];
     receipts.forEach(function(r){
       var rem=Number(r.amount)||0;
       for(var i=0;i<alloc.length&&rem>0;i++){
         var a=alloc[i];if(a.remaining<=0)continue;if(String(a.sale.jDate)>String(r.jDate))break;
-        var take=Math.min(rem,a.remaining);a.remaining-=take;rem-=take
+        var duration=diffJ(parseJ(a.sale.jDate),parseJ(r.jDate));
+        var mult=getMultiplier(duration,settings.tiers,settings.dayBasis);
+        var maxSettlement=a.remaining*mult;
+        var settlement=Math.min(rem,maxSettlement);
+        var principalReduction=settlement/mult;
+        a.remaining-=principalReduction;rem-=settlement;
+        receiptAllocations.push({ReceiptID:r.id,SaleID:a.sale.id,SettlementAmount:settlement,PrincipalReduction:principalReduction,DurationDays:duration,Multiplier:mult});
       }
       if(rem>0)credit+=rem
     });
@@ -71,11 +77,14 @@
       a.settlement=a.remaining*a.mult;a.interest=a.settlement-a.remaining;
       totalInt+=a.interest;totalRem+=a.remaining;totalSV+=a.settlement;totalOrig+=a.orig
     });
-    return {alloc:alloc,credit:credit,totalInt:totalInt,totalRem:totalRem,totalSV:totalSV,totalOrig:totalOrig}
+    return {alloc:alloc,credit:credit,totalInt:totalInt,totalRem:totalRem,totalSV:totalSV,totalOrig:totalOrig,receiptAllocations:receiptAllocations}
+  }
+  function buildReceiptAllocations(input){
+    return fifo(input).receiptAllocations.map(function(row){return Object.freeze({ReceiptID:row.ReceiptID,SaleID:row.SaleID,SettlementAmount:row.SettlementAmount,PrincipalReduction:row.PrincipalReduction,DurationDays:row.DurationDays,Multiplier:row.Multiplier})});
   }
   function customerSummary(input){
     var f=fifo(input),sales=(input.sales||[]).filter(function(x){return x.customerId===input.customerId&&String(x.jDate)<=String(input.calcDate)}),receipts=(input.receipts||[]).filter(function(x){return x.customerId===input.customerId&&x.status!=="باطل"&&x.status!=="برگشتی"&&String(x.jDate)<=String(input.calcDate)});
     return {totalSales:sales.reduce(function(n,x){return n+(Number(x.amount)||0)},0),totalReceipts:receipts.reduce(function(n,x){return n+(Number(x.amount)||0)},0),balance:f.totalRem,credit:f.credit,interest:f.totalInt,engine:f}
   }
-  return {DateEngine:{g2j:g2j,j2g:j2g,parseJ:parseJ,diffJ:diffJ},Finance:{getMultiplier:getMultiplier,fifo:fifo,customerSummary:customerSummary}}
+  return {DateEngine:{g2j:g2j,j2g:j2g,parseJ:parseJ,diffJ:diffJ},Finance:{getMultiplier:getMultiplier,fifo:fifo,buildReceiptAllocations:buildReceiptAllocations,customerSummary:customerSummary}}
 });
