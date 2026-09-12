@@ -10,7 +10,7 @@ test('contract allocation uses the financial domain tier rule for settlement and
   const rows=e.allocateReceipt('R1','1405/07/15',{dayBasis:30,tiers:[{maxDays:30,rate:0,active:true},{maxDays:60,rate:0.06,active:true}]});
   assert.equal(rows.length,1);
   assert.equal(rows[0].DurationDays,45);
-  assert.equal(rows[0].Multiplier,1.09);
+  assert.ok(Math.abs(rows[0].Multiplier-1.09)<1e-12);
   assert.equal(rows[0].SettlementAmount,109);
-  assert.equal(rows[0].PrincipalReduction,100);
+  assert.ok(Math.abs(rows[0].PrincipalReduction-100)<1e-12);
 });
