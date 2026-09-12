@@ -1,10 +1,11 @@
 {
   "name": "accounting-workshop",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0-phase05",
   "description": "Local-first Persian RTL workshop accounting application",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "check": "node --check data.js && node --check domain.js && node --check repository.js && node --check migration.js && node --check transactions.js && node --check reports.js && node --check inventory.js && node --check backup.js && node --check ui.js && node --check app.js"
+    "test:phase05": "node --test tests/phase05-contracts.test.js",
+    "check": "node --check data.js && node --check domain.js && node --check repository.js && node --check migration.js && node --check transactions.js && node --check reports.js && node --check inventory.js && node --check backup.js && node --check ui.js && node --check app.js && node --check phase05.js"
   }
 }
