@@ -1,6 +1,6 @@
 "use strict";
-(function(root,factory){var api=factory();if(typeof module!=="undefined"&&module.exports)module.exports=api;root.Migration=api.Migration})(typeof globalThis!=="undefined"?globalThis:this,function(){
-  var arrays=['people','products','prices','sales','receipts','payments','checks','purchases','saleReturns','purchaseReturns','accounts','transfers','expenses','incomes','adjustments','audit'];
+(function(root,factory){var api=factory();if(typeof module!=="undefined"&&module.exports)module.exports=api;root.Migration=api.Migration})(typeof globalThis!=="undefined'?globalThis:this,function(){
+  var arrays=['people','products','prices','sales','receipts','payments','checks','purchases','saleReturns','purchaseReturns','accounts','transfers','expenses','incomes','adjustments','audit','operations','effects','receiptAllocations'];
   function normalize(input){
     var src=input&&typeof input==='object'?input:{};var out=Object.assign({},src);
     arrays.forEach(function(k){if(!Array.isArray(out[k]))out[k]=[]});
