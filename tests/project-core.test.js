@@ -1,0 +1,13 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');
+const {Finance}=require('../domain');const {OperationEngine,ERR}=require('../operations');
+const settings={dayBasis:30,tiers:[{maxDays:30,rate:0,active:true},{maxDays:60,rate:.06,active:true},{maxDays:120,rate:.10,active:true}]};
+test('tier 45 days uses 6 percent tier for full duration',()=>assert.ok(Math.abs(Finance.getMultiplier(45,settings.tiers,30)-1.09)<1e-12));
+test('tier 60 days equals 12 percent total multiplier',()=>assert.ok(Math.abs(Finance.getMultiplier(60,settings.tiers,30)-1.12)<1e-12));
+test('tier boundary 61 days moves to next tier',()=>assert.ok(Math.abs(Finance.getMultiplier(61,settings.tiers,30)-(1+.10*61/30))<1e-12));
+test('FIFO is deterministic for same-date sales by id',()=>{const sales=[{id:'S002',customerId:'C',jDate:'1405/01/01',amount:100},{id:'S001',customerId:'C',jDate:'1405/01/01',amount:100}];const f=Finance.fifo({customerId:'C',calcDate:'1405/01/10',settings,sales,receipts:[{id:'R1',customerId:'C',jDate:'1405/01/10',amount:100,status:'وصول شده'}]});assert.equal(f.receiptAllocations[0].SaleID,'S001');});
+test('overpayment becomes calculated credit',()=>{const f=Finance.fifo({customerId:'C',calcDate:'1405/01/10',settings,sales:[{id:'S1',customerId:'C',jDate:'1405/01/01',amount:100}],receipts:[{id:'R1',customerId:'C',jDate:'1405/01/02',amount:500,status:'وصول شده'}]});assert.ok(f.credit>0);});
+test('idempotency conflict is explicit',()=>{const e=new OperationEngine();const r={operationType:'SALE',idempotencyKey:'K',actorId:'U',payload:{amount:100}};e.execute(r,()=>[{Value:100}]);assert.throws(()=>e.execute({...r,payload:{amount:101}}),x=>x.code===ERR.IDEMPOTENCY_CONFLICT);});
+test('unknown operation type is rejected',()=>{const e=new OperationEngine();assert.throws(()=>e.execute({operationType:'UNKNOWN',idempotencyKey:'K',actorId:'U',payload:{}}),x=>x.code===ERR.INVALID_OPERATION_TYPE);});
+test('POSTED operation is reversed by a new operation',()=>{const e=new OperationEngine();const a=e.execute({operationType:'EXPENSE',idempotencyKey:'E1',actorId:'U',payload:{amount:50}},()=>[{Value:50}]);const r=e.reverse(a.operation.OperationID,{idempotencyKey:'ER1',actorId:'U'});assert.equal(a.operation.Status,'REVERSED');assert.equal(r.effects.length,1);assert.equal(r.effects[0].ReversesEffectID,e.effects[0].EffectID);});
+test('failure after effects enters NEEDS_REPAIR',()=>{const e=new OperationEngine({failAfterEffects:true});assert.throws(()=>e.execute({operationType:'EXPENSE',idempotencyKey:'F1',actorId:'U',payload:{amount:10}},()=>[{Value:10}]),x=>x.code===ERR.NEEDS_REPAIR);assert.equal(e.operations[0].Status,'NEEDS_REPAIR');});
