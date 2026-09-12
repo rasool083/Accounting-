@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none';">
+<meta name="referrer" content="no-referrer">
+<title>سامانه حسابداری کارگاه</title>
+<style>
+:root{--bg:#f1f5f9;--pn:#fff;--bd:#dbe1ea;--tx:#1e293b;--mu:#64748b;--pr:#2563eb;--ok:#16a34a;--dn:#dc2626;--wn:#ea580c;--vi:#7c3aed}
+*{box-sizing:border-box;font-family:Tahoma,"Segoe UI",sans-serif;margin:0;padding:0}
+html,body{height:100%;font-size:13px;background:var(--bg);color:var(--tx);-webkit-tap-highlight-color:transparent}
+body{overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit;outline:none}
+button{cursor:pointer;border:none;background:none}
+#app{min-height:100vh;display:flex;flex-direction:column}
+#hd{background:#1e293b;color:#fff;padding:10px 12px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:50}
+#hd .logo{width:26px;height:26px;flex-shrink:0}
+#hd h1{font-size:14px;font-weight:bold;flex:1}
+#hd .lockBtn{background:#334155;color:#cbd5e1;padding:5px 10px;border-radius:5px;font-size:11px}
+#nav{background:#1e293b;padding:6px;display:flex;gap:3px;overflow-x:auto;position:sticky;top:46px;z-index:40;scrollbar-width:none}
+#nav::-webkit-scrollbar{display:none}
+#nav button{padding:6px 10px;background:#334155;color:#cbd5e1;border-radius:5px;font-size:11.5px;white-space:nowrap;transition:.15s}
+#nav button:hover{background:#475569;color:#fff}
+#nav button.on{background:var(--pr);color:#fff;font-weight:bold}
+#main{flex:1;padding:10px;max-width:1200px;margin:0 auto;width:100%}
+.bx{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:12px;margin-bottom:10px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.bx h3{font-size:13px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.bx h3 .cnt{font-size:11px;color:var(--mu);font-weight:normal}
+label{font-size:11px;color:var(--mu);font-weight:bold;display:block;margin-bottom:3px;margin-top:6px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:6px;background:#f8fafc;font-size:13px;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--pr);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input[readonly]{background:#e2e8f0;cursor:not-allowed}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.row.one{grid-template-columns:1fr}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:var(--pr);color:#fff;border-radius:6px;font-size:12px;font-weight:bold;transition:.15s}
+.btn:hover{background:#1d4ed8}
+.btn.g{background:#fff;color:var(--tx);border:1px solid var(--bd)}
+.btn.g:hover{background:var(--bg)}
+.btn.r{background:var(--dn)}.btn.r:hover{background:#b91c1c}
+.btn.s{background:var(--ok)}.btn.s:hover{background:#15803d}
+.btn.w{background:var(--wn)}.btn.w:hover{background:#c2410c}
+.btn.sm{padding:4px 8px;font-size:11px}
+.btn.ic{padding:6px;width:30px;height:30px;justify-content:center}
+.actions{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f1f5f9;color:var(--mu);padding:7px 8px;text-align:right;font-size:11px;font-weight:bold;border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:right;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:6px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum";direction:ltr;display:inline-block}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:10px}
+.k{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:10px;transition:.15s}
+.k:hover{box-shadow:0 4px 12px rgba(15,23,42,.08)}
+.k .l{font-size:10.5px;color:var(--mu);font-weight:bold;margin-bottom:3px}
+.k .v{font-size:16px;font-weight:bold;font-variant-numeric:tabular-nums}
+.k.p .v{color:var(--pr)}.k.s .v{color:var(--ok)}.k.d .v{color:var(--dn)}.k.w .v{color:var(--wn)}.k.v .v{color:var(--vi)}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold}
+.tag.s{background:#dcfce7;color:#166534}
+.tag.d{background:#fee2e2;color:#991b1b}
+.tag.w{background:#fed7aa;color:#9a3412}
+.tag.i{background:#dbeafe;color:#1e40af}
+.tag.m{background:#f1f5f9;color:var(--mu)}
+.em{padding:30px;text-align:center;color:var(--mu);font-size:12px}
+.mod{position:fixed;inset:0;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:12px;backdrop-filter:blur(3px)}
+.mod-box{background:#fff;border-radius:10px;max-width:600px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 40px rgba(15,23,42,.3)}
+.mod-hd{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.mod-hd h3{font-size:14px}
+.mod-bd{padding:16px;overflow-y:auto;flex:1}
+.mod-ft{padding:12px 16px;border-top:1px solid var(--bd);display:flex;gap:6px;justify-content:flex-start;flex-wrap:wrap}
+.toast{position:fixed;bottom:16px;left:16px;z-index:200;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast .t{background:#1e293b;color:#fff;padding:9px 14px;border-radius:6px;font-size:12px;box-shadow:0 6px 20px rgba(15,23,42,.25);animation:sl .25s;border-right:3px solid var(--pr)}
+.toast .t.s{background:#15803d;border-right-color:#4ade80}
+.toast .t.d{background:#b91c1c;border-right-color:#fca5a5}
+.toast .t.w{background:#c2410c;border-right-color:#fdba74}
+@keyframes sl{from{transform:translateX(-30px);opacity:0}}
+#lockscr{position:fixed;inset:0;background:#1e293b;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+#lockscr.on{display:flex}
+#lockscr .box{background:#fff;border-radius:12px;padding:24px;max-width:340px;width:100%;text-align:center}
+#lockscr .box h2{font-size:16px;margin-bottom:6px}
+#lockscr .box p{font-size:11px;color:var(--mu);margin-bottom:14px}
+#lockscr .box input{text-align:center;font-size:20px;letter-spacing:8px}
+.bar-chart{display:flex;align-items:flex-end;gap:3px;height:140px;padding:6px 0;overflow-x:auto}
+.bar-chart .bar{flex:1;min-width:30px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar-chart .bar .col{width:100%;max-width:38px;background:linear-gradient(180deg,var(--pr),#60a5fa);border-radius:4px 4px 0 0;transition:.3s;min-height:2px}
+.bar-chart .bar .lbl{font-size:9px;color:var(--mu);white-space:nowrap}
+.bar-chart .bar .val{font-size:9px;color:var(--mu)}
+.tabs-l2{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.tabs-l2 button{padding:5px 10px;background:#fff;border:1px solid var(--bd);border-radius:5px;font-size:11.5px}
+.tabs-l2 button.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.info-line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--bd);font-size:12px}
+.info-line:last-child{border-bottom:none}
+.info-line b{color:var(--mu);font-weight:normal}
+@media print{
+  #nav,#hd,.actions,.btn,#lockscr{display:none!important}
+  .bx{page-break-inside:avoid;box-shadow:none}
+  body{background:#fff}
+}
+@media (max-width:600px){
+  #main{padding:8px}
+  .bx{padding:10px}
+  .k .v{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<div id="lockscr">
+  <div class="box">
+    <h2>🔒 سامانه قفل است</h2>
+    <p>رمز عبور را وارد کنید</p>
+    <input type="password" id="pinIn" maxlength="8" placeholder="••••" inputmode="numeric">
+    <div class="actions" style="justify-content:center;margin-top:12px">
+      <button class="btn s" id="pinOk">باز کردن</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="hd">
+    <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M3 3h18v4H3zM3 11h18v10H3zM7 15h4M7 19h6"/></svg>
+    <h1>سامانه حسابداری کارگاه</h1>
+    <button class="lockBtn" id="lockToggle">🔒</button>
+  </div>
+  <div id="nav"></div>
+  <div id="main"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   1. Storage Layer (localStorage با نام‌گذاری امن)
+   ============================================================ */
+const SK = "ACC_";
+const Store = {
+  get(k, def) {
+    try { const r = localStorage.getItem(SK + k); return r ? JSON.parse(r) : def; }
+    catch (e) { return def; }
+  },
+  set(k, v) {
+    try { localStorage.setItem(SK + k, JSON.stringify(v)); return true; }
+    catch (e) { toast("خطا در ذخیره‌سازی: حافظه پر است", "d", 4000); return false; }
+  },
+  remove(k) { try { localStorage.removeItem(SK + k); } catch (e) {} }
+};
+
+/* ============================================================
+   2. Utilities
+   ============================================================ */
+function uid(p) { return (p || "") + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function fmt(n) {
+  n = parseFloat(n) || 0;
+  return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+function parseN(s) { return parseFloat(String(s || "").replace(/[,\s٬]/g, "")) || 0; }
+function todayISO() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
+
+/* ============================================================
+   3. Jalali Date (بدون کتابخانه خارجی)
+   ============================================================ */
+function p2(n) { return n < 10 ? "0" + n : "" + n; }
+function dv(a, b) { return Math.floor(a / b); }
+function g2j(gy, gm, gd) {
+  const m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  let jy = (gy <= 1600) ? 0 : 979; gy -= (gy <= 1600) ? 621 : 1600;
+  const gy2 = (gm > 2) ? (gy + 1) : gy;
+  let d = (365 * gy) + dv(gy2 + 3, 4) - dv(gy2 + 99, 100) + dv(gy2 + 399, 400) - 80 + gd + m[gm - 1];
+  jy += 33 * dv(d, 12053); d %= 12053;
+  jy += 4 * dv(d, 1461); d %= 1461;
+  if (d > 365) { jy += dv(d - 1, 365); d = (d - 1) % 365; }
+  const jm = (d < 186) ? 1 + dv(d, 31) : 7 + dv(d - 186, 30);
+  const jd = 1 + ((d < 186) ? (d % 31) : ((d - 186) % 30));
+  return [jy, p2(jm), p2(jd)];
+}
+function j2g(jy, jm, jd) {
+  let gy = (jy <= 979) ? 621 : 1600; jy -= (jy <= 979) ? 0 : 979;
+  let d = (365 * jy) + dv(jy, 33) * 8 + dv((jy % 33) + 3, 4) + 78 + jd +
+    ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+  gy += 400 * dv(d, 146097); d %= 146097;
+  if (d > 36524) { gy += 100 * dv(d, 36524); d %= 36524; if (d >= 365) d++; }
+  gy += 4 * dv(d, 1461); d %= 1461;
+  if (d > 365) { gy += dv(d, 365); d %= 365; }
+  const gdm = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let gm = 1;
+  while (gm <= 12 && d >= gdm[gm]) { d -= gdm[gm]; gm++; }
+  return [gy, gm, d + 1];
+}
+function todayJ() { const d = new Date(); return g2j(d.getFullYear(), d.getMonth() + 1, d.getDate()).join("/"); }
+function parseJ(s) {
+  if (!s) return null;
+  const m = String(s).match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  return m ? [+m[1], +m[2], +m[3]] : null;
+}
+function diffJ(a, b) {
+  const g1 = j2g(a[0], a[1], a[2]), g2 = j2g(b[0], b[1], b[2]);
+  return Math.round((new Date(g2[0], g2[1] - 1, g2[2]) - new Date(g1[0], g1[1] - 1, g1[2])) / 86400000);
+}
+function monthKey(jStr) { const p = parseJ(jStr); return p ? p[0] + "/" + p[1] : ""; }
+
+/* ============================================================
+   4. Toast & Modal
+   ============================================================ */
+function toast(msg, type, ms) {
+  type = type || "";
+  ms = ms || 2200;
+  const el = document.createElement("div");
+  el.className = "t " + type;
+  el.textContent = msg;
+  document.getElementById("toast").appendChild(el);
+  setTimeout(() => {
+    el.style.transition = ".25s"; el.style.opacity = "0";
+    setTimeout(() => el.remove(), 250);
+  }, ms);
+}
+function modal(title, bodyHTML, actions) {
+  const ov = document.createElement("div");
+  ov.className = "mod";
+  ov.innerHTML = `<div class="mod-box">
+    <div class="mod-hd"><h3>${esc(title)}</h3><button class="btn ic g" data-close>✕</button></div>
+    <div class="mod-bd">${bodyHTML}</div>
+    <div class="mod-ft"></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const ft = ov.querySelector(".mod-ft");
+  (actions || []).forEach(a => {
+    const b = document.createElement("button");
+    b.className = "btn " + (a.cls || "");
+    b.textContent = a.label;
+    b.addEventListener("click", () => {
+      const r = a.click ? a.click(ov) : true;
+      if (r !== false) ov.remove();
+    });
+    ft.appendChild(b);
+  });
+  ov.querySelector("[data-close]").addEventListener("click", () => ov.remove());
+  ov.addEventListener("click", e => { if (e.target === ov) ov.remove(); });
+  return ov;
+}
+function confirmBox(msg, cb) {
+  modal("تأیید", `<p style="font-size:13px;line-height:1.9">${esc(msg)}</p>`, [
+    { label: "انصراف", cls: "g", click: () => cb(false) },
+    { label: "تأیید", cls: "r", click: () => cb(true) }
+  ]);
+}
+
+/* ============================================================
+   5. Data Model
+   ============================================================ */
+const DB = {
+  people: [], products: [], prices: [], sales: [], receipts: [], audit: [],
+  settings: null,
+  load() {
+    this.people = Store.get("people", []);
+    this.products = Store.get("products", []);
+    this.prices = Store.get("prices", []);
+    this.sales = Store.get("sales", []);
+    this.receipts = Store.get("receipts", []);
+    this.audit = Store.get("audit", []).slice(-500);
+    this.settings = Store.get("settings", null) || this.defaultSettings();
+  },
+  save(what) {
+    if (Array.isArray(this[what])) Store.set(what, this[what]);
+    else if (what === "settings") Store.set("settings", this.settings);
+  },
+  defaultSettings() {
+    return {
+      currency: "ریال",
+      dayBasis: 30,
+      graceDays: 30,
+      pin: "",
+      tiers: [
+        { id: "t1", maxDays: 30, rate: 0, active: true },
+        { id: "t2", maxDays: 60, rate: 0.06, active: true },
+        { id: "t3", maxDays: 120, rate: 0.10, active: true },
+        { id: "t4", maxDays: 9999, rate: 0.15, active: true }
+      ]
+    };
+  },
+  auditLog(action, table, recordId, note) {
+    this.audit.push({
+      id: uid("A"), at: todayISO(), action, table, recordId, note: note || ""
+    });
+    this.audit = this.audit.slice(-500);
+    this.save("audit");
+  },
+  getCustomer(id) { return this.people.find(p => p.id === id); },
+  getProduct(id) { return this.products.find(p => p.id === id); },
+  currentPrice(productId, atDate) {
+    const target = atDate || todayJ();
+    let best = null;
+    for (const p of this.prices) {
+      if (p.productId !== productId) continue;
+      if (String(p.effectiveDate || "") > String(target)) continue;
+      if (!best || String(p.effectiveDate || "") > String(best.effectiveDate || "")) best = p;
+    }
+    return best;
+  }
+};
+
+/* ============================================================
+   6. FIFO Engine + Tiered Interest (قلب سیستم)
+   ============================================================ */
+function getMultiplier(days, tiers, basis) {
+  const act = tiers.filter(t => t.active !== false).sort((a, b) => a.maxDays - b.maxDays);
+  if (!act.length) return 1;
+  let sel = act[act.length - 1];
+  for (const t of act) { if (days <= t.maxDays) { sel = t; break; } }
+  if (!sel || !sel.rate) return 1;
+  return 1 + (sel.rate * days / basis);
+}
+function fifo(customerId, calcDate) {
+  const s = DB.settings;
+  const calcArr = parseJ(calcDate) || parseJ(todayJ());
+  const sales = DB.sales.filter(x => x.customerId === customerId)
+    .sort((a, b) => {
+      const d = String(a.jDate || "").localeCompare(String(b.jDate || ""));
+      return d || String(a.id).localeCompare(String(b.id));
+    });
+  const receipts = DB.receipts.filter(x => x.customerId === customerId &&
+    x.status !== "باطل" && x.status !== "برگشتی")
+    .sort((a, b) => String(a.jDate || "").localeCompare(String(b.jDate || "")));
+
+  const alloc = sales.map(s => ({
+    sale: s, orig: s.amount, remaining: s.amount,
+    days: 0, mult: 1, settlement: 0, interest: 0
+  }));
+  let credit = 0;
+  for (const r of receipts) {
+    let rem = r.amount;
+    for (const a of alloc) {
+      if (rem <= 0) break;
+      if (a.remaining <= 0) continue;
+      if (String(a.sale.jDate || "") > String(r.jDate || "")) break;
+      const take = Math.min(rem, a.remaining);
+      a.remaining -= take; rem -= take;
+    }
+    if (rem > 0) credit += rem;
+  }
+  let totalInt = 0, totalRem = 0, totalSV = 0, totalOrig = 0;
+  for (const a of alloc) {
+    if (a.remaining > 0) {
+      const p = parseJ(a.sale.jDate);
+      if (p) {
+        const d = diffJ(p, calcArr);
+        a.days = d;
+        a.mult = getMultiplier(d, s.tiers, s.dayBasis);
+        a.settlement = a.remaining * a.mult;
+        a.interest = a.settlement - a.remaining;
+        totalInt += a.interest; totalRem += a.remaining;
+        totalSV += a.settlement; totalOrig += a.orig;
+      }
+    }
+  }
+  return { alloc, credit, totalInt, totalRem, totalSV, totalOrig };
+}
+function customerSummary(id) {
+  const f = fifo(id, todayJ());
+  const sales = DB.sales.filter(s => s.customerId === id);
+  const receipts = DB.receipts.filter(r => r.customerId === id &&
+    r.status !== "باطل" && r.status !== "برگشتی");
+  const totalSales = sales.reduce((a, x) => a + (x.amount || 0), 0);
+  const totalReceipts = receipts.reduce((a, x) => a + (x.amount || 0), 0);
+  return { totalSales, totalReceipts, balance: f.totalRem, credit: f.credit, interest: f.totalInt, engine: f };
+}
+
+/* ============================================================
+   7. Router
+   ============================================================ */
+const TABS = [
+  { id: "dashboard", label: "داشبورد", icon: "📊" },
+  { id: "people", label: "اشخاص", icon: "👥" },
+  { id: "products", label: "کالاها", icon: "📦" },
+  { id: "prices", label: "قیمت‌ها", icon: "💰" },
+  { id: "sales", label: "فروش", icon: "🧾" },
+  { id: "receipts", label: "دریافت‌ها", icon: "💵" },
+  { id: "statement", label: "حساب جاری", icon: "📋" },
+  { id: "month", label: "بستن ماه", icon: "📅" },
+  { id: "audit", label: "رویدادها", icon: "🔐" },
+  { id: "backup", label: "پشتیبان", icon: "💾" },
+  { id: "settings", label: "تنظیمات", icon: "⚙️" }
+];
+let currentTab = "dashboard";
+function renderNav() {
+  const nav = document.getElementById("nav");
+  nav.innerHTML = TABS.map(t =>
+    `<button data-t="${t.id}" class="${t.id === currentTab ? "on" : ""}">${t.icon} ${t.label}</button>`
+  ).join("");
+  nav.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => { currentTab = b.dataset.t; render(); });
+  });
+}
+function render() {
+  renderNav();
+  const main = document.getElementById("main");
+  const map = {
+    dashboard: renderDashboard,
+    people: renderPeople,
+    products: renderProducts,
+    prices: renderPrices,
+    sales: renderSales,
+    receipts: renderReceipts,
+    statement: renderStatement,
+    month: renderMonth,
+    audit: renderAudit,
+    backup: renderBackup,
+    settings: renderSettings
+  };
+  try {
+    main.innerHTML = (map[currentTab] || renderDashboard)();
+  } catch (e) {
+    main.innerHTML = `<div class="bx"><div class="em">خطا در نمایش: ${esc(e.message)}</div></div>`;
+  }
+}
+
+/* ============================================================
+   8. Dashboard
+   ============================================================ */
+function renderDashboard() {
+  const s = DB.sales, r = DB.receipts;
+  const totalSales = s.reduce((a, x) => a + (x.amount || 0), 0);
+  const totalReceipts = r.filter(x => x.status !== "باطل
