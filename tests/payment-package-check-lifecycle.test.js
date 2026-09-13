@@ -21,10 +21,11 @@ test('editing payment package changes calculation for invoices assigned to that 
   DB.addPrice({id:'PX',productId:'Z',effectiveDate:'1405/06/01',price:100});
   const sale=Transactions.addSale({customerId:p.id,productId:'Z',salesUnit:'عدد',quantity:1,jDate:'1405/06/01'});
   assert.equal(sale.paymentPackageId,'St1');
+  const before=Transactions.customerStatement(p.id,'1405/07/16');
+  assert.ok(Math.abs(before.totalInt-0.09)<1e-9);
   DB.state.paymentPackages[0].tiers[1].rate=0.10;DB.save();
-  const summary=Transactions.customerStatement(p.id,'1405/08/01');
-  assert.ok(summary.totalInt>0);
-  assert.ok(Math.abs(summary.totalInt-0.5)<1e-9);
+  const after=Transactions.customerStatement(p.id,'1405/07/16');
+  assert.ok(Math.abs(after.totalInt-0.15)<1e-9);
 });
 
 test('check status change creates an immutable event and keeps replacement linkage',()=>{
@@ -33,8 +34,8 @@ test('check status change creates an immutable event and keeps replacement linka
   const receipt=Transactions.addReceipt({customerId:p.id,type:'چک',amount:5000000,jDate:'1405/06/20',status:'نزد ما',checkNo:'CH-1',bank:'A',dueDate:'1405/07/20'});
   const changed=Transactions.changeReceiptStatus(receipt.id,'وصول شده',{actualDate:'1405/07/20'});
   assert.equal(changed.status,'وصول شده');
-  assert.equal(DB.state.checkEvents.length,1);
-  assert.equal(DB.state.checkEvents[0].fromStatus,'نزد ما');
-  assert.equal(DB.state.checkEvents[0].toStatus,'وصول شده');
-  assert.equal(DB.state.checkEvents[0].receiptId,receipt.id);
+  assert.equal(DB.state.checkEvents.length,2);
+  assert.equal(DB.state.checkEvents[1].fromStatus,'نزد ما');
+  assert.equal(DB.state.checkEvents[1].toStatus,'وصول شده');
+  assert.equal(DB.state.checkEvents[1].receiptId,receipt.id);
 });
