@@ -15,7 +15,10 @@ test('unified support records discount and excludes placeholder products',()=>{
 
 test('check status target is stored and replacement may be cash without reopening original debt',()=>{
  const {DB,Transactions}=loadApp();
- DB.addPerson({id:'C2',name:'مشتری 2',roles:['customer']});
+ const p=DB.addPerson({id:'C2',name:'مشتری 2',roles:['customer']});
+ Transactions.addProduct({id:'P2',name:'محصول 2',baseUnit:'عدد',packageUnit:'کارتن',unitsPerPackage:1,pricingUnit:'عدد'});
+ DB.addPrice({id:'PX2',productId:'P2',effectiveDate:'1405/06/01',price:1000000});
+ Transactions.addSale({customerId:p.id,productId:'P2',salesUnit:'عدد',quantity:1,jDate:'1405/06/01'});
  const acct=Transactions.addTreasuryAccount({id:'A1',name:'بانک سپه',type:'bank'});
  const r=Transactions.addReceipt({customerId:'C2',type:'چک',amount:1000000,jDate:'1405/06/01',status:'نزد ما',checkNo:'C-1',bank:'بانک',dueDate:'1405/07/01'});
  Transactions.updateCheckTarget(r.id,{status:'وصول شده',targetId:acct.id,targetType:'account',actualDate:'1405/06/10'});
@@ -23,7 +26,7 @@ test('check status target is stored and replacement may be cash without reopenin
  Transactions.updateCheckTarget(r.id,{status:'برگشتی',targetId:acct.id,targetType:'account',actualDate:'1405/06/12'});
  const repl=Transactions.replaceCheckV2(r.id,{type:'نقد',amount:1000000,jDate:'1405/06/13'});
  assert.equal(repl.replacementOfReceiptId,r.id); assert.equal(repl.type,'نقد');
- const s=Transactions.customerStatement('C2','1405/06/20'); assert.equal(s.balance,0);
+ const s=Transactions.customerStatement('C2','1405/06/20'); assert.equal(s.balance,0); assert.equal(s.totalReceipts,1000000);
 });
 
 test('payment stores direction method and treasury account',()=>{
