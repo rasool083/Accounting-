@@ -6,62 +6,23 @@ const PAYMENT_PACKAGES=[
   {id:'St2',name:'St2',active:true,tiers:[{id:'t1',maxDays:30,rate:0,active:true},{id:'t2',maxDays:60,rate:.05,active:true},{id:'t3',maxDays:120,rate:.09,active:true},{id:'t4',maxDays:9999,rate:.12,active:true}]},
   {id:'St3',name:'St3',active:true,tiers:[{id:'t1',maxDays:30,rate:0,active:true},{id:'t2',maxDays:60,rate:.04,active:true},{id:'t3',maxDays:120,rate:.08,active:true},{id:'t4',maxDays:9999,rate:.10,active:true}]}
 ];
-const WAREHOUSES=[
-  {id:'RM',name:'انبار مواد اولیه',active:true},
-  {id:'TR',name:'انبار بازرگانی',active:true},
-  {id:'FG',name:'انبار محصولات',active:true}
-];
-const defaults={
-  settings:{currency:'ریال',dayBasis:30,graceDays:30,tiers:PAYMENT_PACKAGES[0].tiers},
-  people:[],customers:[],products:[],prices:[],sales:[],receipts:[],checks:[],purchases:[],payments:[],expenses:[],incomes:[],inventoryMovements:[],operations:[],effects:[],audit:[],receiptAllocations:[],
-  warehouses:WAREHOUSES,paymentPackages:PAYMENT_PACKAGES
-};
+const WAREHOUSES=[{id:'RM',name:'انبار مواد اولیه',active:true},{id:'TR',name:'انبار بازرگانی',active:true},{id:'FG',name:'انبار محصولات',active:true}];
+const defaults={settings:{currency:'ریال',dayBasis:30,graceDays:30,tiers:PAYMENT_PACKAGES[0].tiers},people:[],customers:[],products:[],prices:[],sales:[],receipts:[],checks:[],purchases:[],payments:[],expenses:[],incomes:[],inventoryMovements:[],operations:[],effects:[],audit:[],receiptAllocations:[],warehouses:WAREHOUSES,paymentPackages:PAYMENT_PACKAGES};
 function clone(x){return JSON.parse(JSON.stringify(x));}
-function normalizePerson(p){
-  const roles=Array.isArray(p.roles)?p.roles.slice(): (p.role?[p.role]:[]);
-  return Object.assign({roles:roles,role:roles[0]||'',paymentPackageId:p.paymentPackageId||null,company:'',phone:'',address:'',notes:'',active:true},clone(p),{roles:roles,role:roles[0]||'',paymentPackageId:p.paymentPackageId||null});
-}
-function normalizeProduct(p){
-  const baseUnit=p.baseUnit||p.unit||'عدد';
-  const packageUnit=p.packageUnit||p.pkg||'کارتن';
-  const unitsPerPackage=Number(p.unitsPerPackage??p.ppp??1)||1;
-  return Object.assign({baseUnit:baseUnit,packageUnit:packageUnit,unitsPerPackage:unitsPerPackage,pricingUnit:p.pricingUnit||baseUnit,salesUnits:[baseUnit,packageUnit],warehouseId:p.warehouseId||'FG',active:true,notes:''},clone(p),{baseUnit,packageUnit,unitsPerPackage,salesUnits:Array.from(new Set([baseUnit,packageUnit].filter(Boolean))),warehouseId:p.warehouseId||'FG'});
-}
-function normalizeState(raw){
-  const s=Object.assign(clone(defaults),raw||{});
-  if(!Array.isArray(s.paymentPackages)||!s.paymentPackages.length)s.paymentPackages=clone(PAYMENT_PACKAGES);
-  if(!Array.isArray(s.warehouses)||!s.warehouses.length)s.warehouses=clone(WAREHOUSES);
-  const legacy=Array.isArray(s.customers)?s.customers:[];
-  const current=Array.isArray(s.people)?s.people:[];
-  const map=new Map();
-  legacy.forEach(p=>map.set(p.id,normalizePerson(Object.assign({},p,{roles:(p.roles||['customer'])}))),);
-  current.forEach(p=>map.set(p.id,normalizePerson(p)));
-  s.people=Array.from(map.values());
-  s.customers=s.people.filter(p=>p.roles.includes('customer'));
-  s.products=(Array.isArray(s.products)?s.products:[]).map(normalizeProduct);
-  return s;
-}
+function normalizePerson(p){const roles=Array.isArray(p.roles)?p.roles.slice():(p.role?[p.role]:[]);return Object.assign({roles:roles,role:roles[0]||'',paymentPackageId:p.paymentPackageId||null,company:'',phone:'',address:'',notes:'',active:true},clone(p),{roles:roles,role:roles[0]||'',paymentPackageId:p.paymentPackageId||null});}
+function normalizeProduct(p){const baseUnit=p.baseUnit||p.unit||'عدد',packageUnit=p.packageUnit||p.pkg||'کارتن',unitsPerPackage=Number(p.unitsPerPackage??p.ppp??1)||1;return Object.assign({baseUnit,packageUnit,unitsPerPackage,pricingUnit:p.pricingUnit||baseUnit,salesUnits:[baseUnit,packageUnit],warehouseId:p.warehouseId||'FG',active:true,notes:''},clone(p),{baseUnit,packageUnit,unitsPerPackage,salesUnits:Array.from(new Set([baseUnit,packageUnit].filter(Boolean))),warehouseId:p.warehouseId||'FG'});}
+function normalizeState(raw){const s=Object.assign(clone(defaults),raw||{});if(!Array.isArray(s.paymentPackages)||!s.paymentPackages.length)s.paymentPackages=clone(PAYMENT_PACKAGES);if(!Array.isArray(s.warehouses)||!s.warehouses.length)s.warehouses=clone(WAREHOUSES);const legacy=Array.isArray(s.customers)?s.customers:[],current=Array.isArray(s.people)?s.people:[],map=new Map();legacy.forEach(p=>map.set(p.id,normalizePerson(Object.assign({},p,{roles:(p.roles||['customer'])}))),);current.forEach(p=>map.set(p.id,normalizePerson(p)));s.people=Array.from(map.values());s.customers=s.people.filter(p=>p.roles.includes('customer'));s.products=(Array.isArray(s.products)?s.products:[]).map(normalizeProduct);return s;}
 function load(){try{return normalizeState(JSON.parse(localStorage.getItem(KEY)||'null')||{});}catch(e){return clone(defaults);}}
-let state=load();
-function save(){state.customers=state.people.filter(x=>x.roles.includes('customer'));localStorage.setItem(KEY,JSON.stringify(state));}
-function next(p){return `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;}
-function getPerson(id){return state.people.find(x=>x.id===id);}
-function getCustomer(id){return state.people.find(x=>x.id===id&&x.roles.includes('customer'));}
-function getSupplier(id){return state.people.find(x=>x.id===id&&x.roles.includes('supplier'));}
-function getProduct(id){return state.products.find(x=>x.id===id);}
-function getPaymentPackage(id){return id?state.paymentPackages.find(x=>x.id===id)||null:null;}
-function currentPrice(productId,date,personId){
-  const rows=state.prices.filter(x=>x.productId===productId&&String(x.effectiveDate)<=String(date));
-  const specific=rows.filter(x=>x.customerId&&x.customerId===personId).sort((a,b)=>String(b.effectiveDate).localeCompare(String(a.effectiveDate))||String(b.id).localeCompare(String(a.id)))[0];
-  if(specific)return specific;
-  return rows.filter(x=>!x.customerId).sort((a,b)=>String(b.effectiveDate).localeCompare(String(a.effectiveDate))||String(b.id).localeCompare(String(a.id)))[0]||null;
-}
+let state=load();function save(){state.customers=state.people.filter(x=>x.roles.includes('customer'));localStorage.setItem(KEY,JSON.stringify(state));}
+function next(p){return`${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;}
+function getPerson(id){return state.people.find(x=>x.id===id);}function getCustomer(id){return state.people.find(x=>x.id===id&&x.roles.includes('customer'));}function getSupplier(id){return state.people.find(x=>x.id===id&&x.roles.includes('supplier'));}function getProduct(id){return state.products.find(x=>x.id===id);}function getPaymentPackage(id){return id?state.paymentPackages.find(x=>x.id===id)||null:null;}
+function currentPrice(productId,date,personId){const rows=state.prices.filter(x=>x.productId===productId&&String(x.effectiveDate)<=String(date));const specific=rows.filter(x=>x.customerId&&x.customerId===personId).sort((a,b)=>String(b.effectiveDate).localeCompare(String(a.effectiveDate))||String(b.id).localeCompare(String(a.id)))[0];if(specific)return specific;return rows.filter(x=>!x.customerId).sort((a,b)=>String(b.effectiveDate).localeCompare(String(a.effectiveDate))||String(b.id).localeCompare(String(a.id)))[0]||null;}
 function add(table,row){if(!Array.isArray(state[table]))state[table]=[];state[table].push(row);save();return row;}
 function addPerson(input){const row=Object.assign({id:next('P'),roles:[],role:'',name:'',company:'',phone:'',address:'',paymentPackageId:null,notes:'',active:true},clone(input||{}));row.roles=Array.from(new Set(Array.isArray(row.roles)?row.roles.filter(Boolean):[]));row.role=row.roles[0]||'';state.people.push(row);save();return row;}
 function updatePerson(id,patch){const i=state.people.findIndex(x=>x.id===id);if(i<0)throw new Error('PERSON_NOT_FOUND');const row=Object.assign({},state.people[i],clone(patch||{}));if(patch&&Object.prototype.hasOwnProperty.call(patch,'roles'))row.roles=Array.from(new Set((patch.roles||[]).filter(Boolean)));row.role=row.roles[0]||'';state.people[i]=row;save();return row;}
 function addProduct(input){const p=normalizeProduct(Object.assign({id:next('PR'),code:'',name:''},input||{}));state.products.push(p);save();return p;}
 function updateProduct(id,patch){const i=state.products.findIndex(x=>x.id===id);if(i<0)throw new Error('PRODUCT_NOT_FOUND');const p=normalizeProduct(Object.assign({},state.products[i],clone(patch||{})));p.id=id;state.products[i]=p;save();return p;}
-function addPrice(input){const row=Object.assign({id:next('PX'),productId:'',customerId:null,price:0,effectiveDate:todayJ(),notes:''},clone(input||{}));row.customerId=row.customerId||null;state.prices.push(row);save();return row;}
-function todayJ(){const d=new Date();const engine=root.AccountingDomain&&root.AccountingDomain.DateEngine;if(!engine)throw new Error('DATE_ENGINE_NOT_READY');const a=engine.g2j(d.getFullYear(),d.getMonth()+1,d.getDate());return `${a[0]}/${String(a[1]).padStart(2,'0')}/${String(a[2]).padStart(2,'0')}`;}
+function addPrice(input){const src=input||{},row=Object.assign({id:next('PX'),productId:'',customerId:null,price:0,effectiveDate:null,notes:''},clone(src));row.customerId=row.customerId||null;if(!row.effectiveDate)row.effectiveDate=todayJ();state.prices.push(row);save();return row;}
+function todayJ(){const d=new Date(),engine=root.AccountingDomain&&root.AccountingDomain.DateEngine;if(!engine)throw new Error('DATE_ENGINE_NOT_READY');const a=engine.g2j(d.getFullYear(),d.getMonth()+1,d.getDate());return`${a[0]}/${String(a[1]).padStart(2,'0')}/${String(a[2]).padStart(2,'0')}`;}
 root.DB={get state(){return state;},save,load:function(){state=load();return state;},next,getPerson,getCustomer,getSupplier,getProduct,getPaymentPackage,currentPrice,add,addPerson,updatePerson,addProduct,updateProduct,addPrice,todayJ,defaults,paymentPackages:PAYMENT_PACKAGES,warehouses:WAREHOUSES};
 })(typeof globalThis!=='undefined'?globalThis:this);
