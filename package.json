@@ -1,7 +1,7 @@
 {
   "name":"accounting-workshop",
-  "version":"0.3.2-phase05-master-data",
+  "version":"0.3.3-phase05-ui-master-data",
   "private":true,
   "description":"Persian RTL workshop accounting system — project execution repository",
-  "scripts":{"test":"node --test tests/project-core.test.js tests/phase05-contracts.test.js tests/phase05-domain-integration.test.js tests/master-data-contract.test.js","test:phase05":"node --test tests/phase05-contracts.test.js tests/phase05-domain-integration.test.js","test:master-data":"node --test tests/master-data-contract.test.js","check":"node --check domain.js && node --check operations.js && node --check phase05.js && node --check data.js && node --check transactions.js && node --check reports.js && node --check project-ui.js && node --check app.js"}
+  "scripts":{"test":"node --test tests/project-core.test.js tests/phase05-contracts.test.js tests/phase05-domain-integration.test.js tests/master-data-contract.test.js tests/sales-master-data.test.js","test:phase05":"node --test tests/phase05-contracts.test.js tests/phase05-domain-integration.test.js","test:master-data":"node --test tests/master-data-contract.test.js tests/sales-master-data.test.js","check":"node --check domain.js && node --check operations.js && node --check phase05.js && node --check data.js && node --check transactions.js && node --check reports.js && node --check project-ui.js && node --check app.js"}
 }
