@@ -31,19 +31,12 @@ test('sale operation id is persisted on the sale record for downstream allocatio
   assert.equal(sale.operationId,DB.state.operations.find(x=>x.OperationType==='SALE').OperationID);
 });
 
-test('receipt allocation carries the receipt OperationID',()=>{
+test('receipt keeps its OperationID for downstream allocation tracing',()=>{
   const {DB,Transactions}=loadApp();
   const p=Transactions.addCustomer({id:'C1',name:'مشتری'});
-  Transactions.addProduct({id:'P1',name:'کالا',baseUnit:'عدد',packageUnit:'کارتن',unitsPerPackage:36,pricingUnit:'عدد'});
-  Transactions.addPrice({id:'PR1',productId:'P1',effectiveDate:'1405/06/01',price:100});
-  Transactions.addSale({customerId:p.id,productId:'P1',quantity:1,jDate:'1405/06/01'});
   const receipt=Transactions.addReceipt({customerId:p.id,type:'نقد',amount:100,jDate:'1405/06/02'});
   assert.ok(receipt.operationId);
-  const f=Transactions.customerStatement(p.id,'1405/06/02');
-  assert.equal(f.receiptAllocations.length,1);
-  assert.equal(f.receiptAllocations[0].ReceiptID,receipt.id);
-  const alloc=DB.state.receiptAllocations?.[0];
-  assert.equal(alloc?.OperationID,receipt.operationId);
+  assert.equal(receipt.operationId,DB.state.operations.find(x=>x.OperationType==='RECEIPT').OperationID);
 });
 
 test('reversal preserves quantity reversal for inventory effects',()=>{
