@@ -5,16 +5,17 @@ const fs = require('node:fs');
 test('index is a thin modular entry point', () => {
   const html = fs.readFileSync('index.html', 'utf8');
   assert.match(html, /style\.css/);
-  assert.match(html, /data\.js/);
-  assert.match(html, /ui\.js/);
+  for (const script of ['domain.js','business-modules.js','data.js','inventory.js','transactions.js','reports.js','ui-phase05.js','ui-patch.js','app.js']) {
+    assert.match(html, new RegExp(script.replace('.', '\\.') + '\\?v='));
+  }
   assert.doesNotMatch(html, /function g2j\(/);
   assert.doesNotMatch(html, /var D=\{/);
 });
 
 test('application modules referenced by the entry point exist', () => {
   const html = fs.readFileSync('index.html', 'utf8');
-  for (const src of ['data.js','domain.js','repository.js','migration.js','transactions.js','reports.js','inventory.js','backup.js','ui.js','app.js']) {
+  for (const src of ['domain.js','business-modules.js','data.js','inventory.js','transactions.js','reports.js','ui-phase05.js','ui-patch.js','app.js']) {
     assert.ok(fs.existsSync(src), src + ' is missing');
-    assert.match(html, new RegExp(src.replace('.', '\\.') + '"'));
+    assert.match(html, new RegExp(src.replace('.', '\\.') + '\\?v='));
   }
 });
