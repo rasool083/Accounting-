@@ -1,2 +1,2 @@
-/* Phase 0.5 UI entrypoint. The complete implementation is kept in ui-phase05.js. */
 'use strict';
+(function(){var s=document.createElement('script');s.src='ui-phase05.js?v=20260914-ui8';document.currentScript.parentNode.insertBefore(s,document.currentScript.nextSibling);})();
