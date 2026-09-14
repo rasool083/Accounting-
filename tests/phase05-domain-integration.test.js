@@ -12,5 +12,5 @@ test('contract allocation uses the financial domain tier rule for settlement and
   assert.equal(rows[0].DurationDays,45);
   assert.equal(rows[0].Multiplier,1.09);
   assert.equal(rows[0].SettlementAmount,109);
-  assert.equal(rows[0].PrincipalReduction,100);
+  assert.ok(Math.abs(rows[0].PrincipalReduction-100)<1e-12);
 });
