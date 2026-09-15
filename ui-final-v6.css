@@ -1,0 +1,16 @@
+/* Final UI pass v6. People page logic is intentionally untouched. */
+.u-modal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;padding:12px!important;z-index:10000!important;background:rgba(15,23,42,.62)!important;backdrop-filter:blur(6px)!important}
+.u-modal.open{display:flex!important}
+.u-modal>.u-card,.u-modal>.v5-modal-card{box-sizing:border-box!important;width:min(520px,calc(100vw - 24px))!important;max-width:520px!important;max-height:90vh!important;margin:0!important;position:relative!important;transform:none!important;border-radius:16px!important;overflow:hidden!important;box-shadow:0 22px 70px rgba(2,8,23,.30)!important}
+.u-modal .u-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important}
+.u-modal .u-body{box-sizing:border-box!important;max-height:calc(90vh - 58px)!important;overflow-y:auto!important;overflow-x:hidden!important}
+.u-modal .u-field{min-width:0!important;width:100%!important;box-sizing:border-box!important}
+.u-modal input,.u-modal select,.u-modal textarea{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important}
+.u-modal .u-save{display:flex!important;gap:8px!important;justify-content:flex-start!important;flex-wrap:wrap!important;margin-top:12px!important}
+.u-modal .u-save .u-btn{min-width:96px!important}
+.u-table{max-width:100%!important;overflow:auto!important}
+.u-table table{min-width:720px!important}
+.u-final-note{margin:8px 0;padding:9px 11px;border-radius:10px;background:rgba(100,116,139,.08);font-size:12px;line-height:1.7}
+.u-unit-preview{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.u-unit-preview>div{padding:9px;border-radius:10px;background:rgba(100,116,139,.08);font-size:12px}
+@media(max-width:560px){.u-modal{padding:7px!important}.u-modal>.u-card,.u-modal>.v5-modal-card{width:calc(100vw - 14px)!important;max-width:none!important;max-height:94vh!important;border-radius:14px!important}.u-modal .u-body{max-height:calc(94vh - 54px)!important;padding:10px!important}.u-modal .u-head{padding:10px 11px!important}.u-modal .u-head b{font-size:13px!important}.u-modal .u-close{width:30px!important;height:30px!important}.u-table table{min-width:680px!important}}
