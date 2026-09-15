@@ -5,24 +5,24 @@
   function hideLock(){var el=document.getElementById('lockscr');if(el)el.classList.remove('on');sessionStorage.setItem('ACC_UNLOCKED','1')}
   function bindLockControls(){
     var ok=document.getElementById('pinOk'),pin=document.getElementById('pinIn'),toggle=document.getElementById('lockToggle');
-    if(ok){ok.addEventListener('click',function(){if(!DB.settings.pin||!pin||pin.value===DB.settings.pin)hideLock();else if(window.toast)toast('PIN نادرست است','d')})}
+    if(ok){ok.addEventListener('click',function(){if(!DB.settings.pin||!pin||pin.value===DB.settings.pin)hideLock();else if(window.toast)toast('PIN نادرست است','d',4000)})}
     if(pin){pin.addEventListener('keydown',function(e){if(e.key==='Enter'&&ok)ok.click()})}
     if(toggle){toggle.addEventListener('click',function(){sessionStorage.removeItem('ACC_UNLOCKED');showLock()})}
   }
   function start(){
     try{DB.load();}catch(e){
       var main=document.getElementById('main');
-      if(main)main.innerHTML='<div class="v3-empty"><strong>خطای بارگذاری داده</strong><br><small>'+String(e&&e.message||e)+'</small></div>';
+      if(main)main.innerHTML='<div class="u-empty v3-empty"><strong>خطای بارگذاری داده</strong><br><small>'+String(e&&e.message||e)+'</small></div>';
       return;
     }
     bindLockControls();
     var guard=window.UIRuntimeGuards;
-    if(guard&&typeof guard.safeRenderV3==='function'){
-      guard.safeRenderV3(function(){window.render();},sessionStorage,document.getElementById('main'));
+    if(guard&&typeof guard.safeRender==='function'){
+      guard.safeRender(function(){window.render();},sessionStorage,document.getElementById('main'));
     }else{
       try{window.render();}catch(e){
         var main2=document.getElementById('main');
-        if(main2)main2.innerHTML='<div class="v3-empty"><strong>خطای بارگذاری رابط</strong><br><small>'+String(e&&e.message||e)+'</small></div>';
+        if(main2)main2.innerHTML='<div class="u-empty v3-empty"><strong>خطای بارگذاری رابط</strong><br><small>'+String(e&&e.message||e)+'</small></div>';
       }
     }
     if(locked())showLock();
