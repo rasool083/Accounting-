@@ -40,14 +40,24 @@ test('payment package tiers support separate modal editing and active/inactive s
   assert.match(js,/delete:tier:/);
 });
 
-test('receipt/payment/check screen has modal entry and inline check status plus returned flag',()=>{
+test('receipt/payment/check screen has modal entry and inline check status, target and returned flag',()=>{
   const js=read('ui-transactions-v5.js');
   assert.match(js,/ثبت دریافت \/ پرداخت/);
   assert.match(js,/data-tx5-status/);
+  assert.match(js,/data-tx5-target/);
   assert.match(js,/data-tx5-returned/);
   assert.match(js,/وصول شده/);
   assert.match(js,/تودیع‌شده/);
   assert.match(js,/برگشتی/);
+});
+
+test('sales screen applies selected unit conversion and invoice-independent discount',()=>{
+  const js=read('ui-sales-v5.js');
+  assert.match(js,/unitsPerPackage/);
+  assert.match(js,/kind==='package'/);
+  assert.match(js,/gross=qty\*unitPrice/);
+  assert.match(js,/s5-discount/);
+  assert.match(js,/isDiscountDocument:true/);
 });
 
 test('returned receipts are excluded from financial FIFO allocation',()=>{
@@ -57,8 +67,9 @@ test('returned receipts are excluded from financial FIFO allocation',()=>{
 
 test('cache-busting version is advanced for the UI repair',()=>{
   const index=read('index.html');
-  assert.match(index,/ui-stable-v6/);
+  assert.match(index,/ui-stable-v7/);
   assert.match(index,/ui-fix-v5\.js/);
   assert.match(index,/ui-transactions-v5\.js/);
+  assert.match(index,/ui-sales-v5\.js/);
   assert.match(index,/ui-fix-v5\.css/);
 });
