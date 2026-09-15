@@ -40,9 +40,25 @@ test('payment package tiers support separate modal editing and active/inactive s
   assert.match(js,/delete:tier:/);
 });
 
+test('receipt/payment/check screen has modal entry and inline check status plus returned flag',()=>{
+  const js=read('ui-transactions-v5.js');
+  assert.match(js,/ثبت دریافت \/ پرداخت/);
+  assert.match(js,/data-tx5-status/);
+  assert.match(js,/data-tx5-returned/);
+  assert.match(js,/وصول شده/);
+  assert.match(js,/تودیع‌شده/);
+  assert.match(js,/برگشتی/);
+});
+
+test('returned receipts are excluded from financial FIFO allocation',()=>{
+  const js=read('domain.js');
+  assert.match(js,/x\.returned!==true/);
+});
+
 test('cache-busting version is advanced for the UI repair',()=>{
   const index=read('index.html');
-  assert.match(index,/ui-stable-v5/);
+  assert.match(index,/ui-stable-v6/);
   assert.match(index,/ui-fix-v5\.js/);
+  assert.match(index,/ui-transactions-v5\.js/);
   assert.match(index,/ui-fix-v5\.css/);
 });
