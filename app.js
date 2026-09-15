@@ -10,11 +10,23 @@
     if(toggle){toggle.addEventListener('click',function(){sessionStorage.removeItem('ACC_UNLOCKED');showLock()})}
   }
   function start(){
-    DB.load();
+    try{DB.load();}catch(e){
+      var main=document.getElementById('main');
+      if(main)main.innerHTML='<div class="v3-empty"><strong>خطای بارگذاری داده</strong><br><small>'+String(e&&e.message||e)+'</small></div>';
+      return;
+    }
     bindLockControls();
-    render();
+    var guard=window.UIRuntimeGuards;
+    if(guard&&typeof guard.safeRenderV3==='function'){
+      guard.safeRenderV3(function(){window.render();},sessionStorage,document.getElementById('main'));
+    }else{
+      try{window.render();}catch(e){
+        var main2=document.getElementById('main');
+        if(main2)main2.innerHTML='<div class="v3-empty"><strong>خطای بارگذاری رابط</strong><br><small>'+String(e&&e.message||e)+'</small></div>';
+      }
+    }
     if(locked())showLock();
   }
-  window.App={start:start,render:render,load:function(){DB.load()}};
+  window.App={start:start,render:function(){window.render();},load:function(){DB.load()}};
 })();
 document.addEventListener('DOMContentLoaded',function(){window.App.start()});
