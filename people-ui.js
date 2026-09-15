@@ -54,7 +54,7 @@
   window.render=function(){
     var activeTab=sessionStorage.getItem('u-tab')||'dashboard';
     if(activeTab==='people'){
-      try{nav();document.getElementById('main').innerHTML=page()}catch(e){document.getElementById('main').innerHTML='<div class="u-empty">خطا در نمایش اشخاص: '+esc(e.message||e)+'</div>'}
+      try{originalRender.apply(this,arguments);document.getElementById('main').innerHTML=page()}catch(e){document.getElementById('main').innerHTML='<div class="u-empty">خطا در نمایش اشخاص: '+esc(e.message||e)+'</div>'}
       return;
     }
     return originalRender.apply(this,arguments);
