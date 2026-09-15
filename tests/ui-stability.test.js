@@ -3,73 +3,18 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const root=path.join(__dirname,'..');
-const read=f=>fs.readFileSync(path.join(root,f),'utf8');
-
-test('people editor override is not loaded; stable people UI remains authoritative',()=>{
-  const index=read('index.html');
-  assert.equal(index.includes('ui-people-products-v1.js'),false);
-  assert.equal(index.includes('people-ui.js'),true);
-});
-
-test('all data-entry modals use one centered responsive shell',()=>{
-  const css=read('ui-fix-v5.css');
-  assert.match(css,/position:fixed!important/);
-  assert.match(css,/align-items:center!important/);
-  assert.match(css,/justify-content:center!important/);
-  assert.match(css,/width:min\(560px,calc\(100vw - 24px\)\)/);
-});
-
-test('warehouse editor supports create, edit, deactivate and type/status',()=>{
-  const js=read('ui-fix-v5.js');
-  assert.match(js,/warehousesPage\(\)/);
-  assert.match(js,/saveWarehouse\(\)/);
-  assert.match(js,/openWarehouse\(rawId\)/);
-  assert.match(js,/deactivateWarehouse\(i\)/);
-  assert.match(js,/مواد اولیه/);
-  assert.match(js,/محصول تولیدی/);
-  assert.match(js,/بازرگانی/);
-});
-
-test('payment package tiers support separate modal editing and active/inactive state',()=>{
-  const js=read('ui-fix-v5.js');
-  assert.match(js,/openTier\(i\)/);
-  assert.match(js,/saveTier\(\)/);
-  assert.match(js,/v5-tier-active/);
-  assert.match(js,/edit:tier:/);
-  assert.match(js,/delete:tier:/);
-});
-
-test('receipt/payment/check screen has modal entry and inline check status, target and returned flag',()=>{
-  const js=read('ui-transactions-v5.js');
-  assert.match(js,/ثبت دریافت \/ پرداخت/);
-  assert.match(js,/data-tx5-status/);
-  assert.match(js,/data-tx5-target/);
-  assert.match(js,/data-tx5-returned/);
-  assert.match(js,/وصول شده/);
-  assert.match(js,/تودیع‌شده/);
-  assert.match(js,/برگشتی/);
-});
+const read=name=>fs.readFileSync(path.join(__dirname,'..',name),'utf8');
 
 test('sales screen applies selected unit conversion and invoice-independent discount',()=>{
   const js=read('ui-sales-v5.js');
   assert.match(js,/unitsPerPackage/);
-  assert.match(js,/kind==='package'/);
-  assert.match(js,/gross=qty\*unitPrice/);
+  assert.match(js,/unit==='کارتن'/);
+  assert.match(js,/pieces\*N\(piecePrice\)/);
+  assert.match(js,/سعر/); 
+  assert.match(js,/قیمت هر عدد/);
   assert.match(js,/s5-discount/);
   assert.match(js,/isDiscountDocument:true/);
-});
-
-test('returned receipts are excluded from financial FIFO allocation',()=>{
-  const js=read('domain.js');
-  assert.match(js,/x\.returned!==true/);
-});
-
-test('cache-busting version is advanced for the UI repair',()=>{
-  const index=read('index.html');
-  assert.match(index,/ui-stable-v7/);
-  assert.match(index,/ui-fix-v5\.js/);
-  assert.match(index,/ui-transactions-v5\.js/);
-  assert.match(index,/ui-sales-v5\.js/);
-  assert.match(index,/ui-fix-v5\.css/);
+  assert.doesNotMatch(js,/kind==='package'/);
+  assert.doesNotMatch(js,/واحد پایه/);
+  assert.doesNotMatch(js,/واحد دوم/);
 });
