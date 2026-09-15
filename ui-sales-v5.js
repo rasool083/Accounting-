@@ -14,13 +14,39 @@
   const products=()=>A('products').filter(x=>x.active!==false);
   const opts=(a,ph)=>'<option value="">'+(ph||'انتخاب کنید')+'</option>'+a.map(x=>'<option value="'+E(x.id)+'">'+E(x.name||x.code||x.id)+'</option>').join('');
   function product(i){return A('products').find(x=>String(x.id)===String(i))||{}}
-  function price(pid,unit){const p=product(pid),d=today();const rows=A('prices').filter(x=>String(x.productId)===String(pid)&&String(x.unit||x.pricingUnit||'عدد')===String(unit)&&String(x.effectiveDate||'')<=String(d)).sort((a,b)=>String(b.effectiveDate||'').localeCompare(String(a.effectiveDate||'')));return N(rows[0]?.price??rows[0]?.unitPrice)}
-  function selectedUnit(){return document.getElementById('s5-unit')?.value||'base'}
-  function recalc(){const pid=document.getElementById('s5-product')?.value,p=product(pid),kind=selectedUnit(),qty=N(document.getElementById('s5-qty')?.value||0);const unit=kind==='package'?(p.packageUnit||'کارتن'):(p.baseUnit||'عدد');let unitPrice=price(pid,unit);if(!unitPrice&&kind==='package')unitPrice=price(pid,p.baseUnit||'عدد')*N(p.unitsPerPackage||1);const baseQty=kind==='package'?qty*N(p.unitsPerPackage||1):qty;const gross=qty*unitPrice;const discount=N(document.getElementById('s5-discount')?.value||0);const net=Math.max(0,gross-discount);document.getElementById('s5-price').value=unitPrice||0;document.getElementById('s5-baseqty').value=baseQty;document.getElementById('s5-calc').textContent='مقدار پایه: '+F(baseQty)+' '+(p.baseUnit||'عدد')+' | ناخالص: '+F(gross)+' | تخفیف: '+F(discount)+' | نهایی: '+F(net);return {p,unit,qty,unitPrice,baseQty,gross,discount,net}}
+
+  // فروش همیشه با «قیمت هر عدد» از تاریخچه قیمت محاسبه می‌شود؛
+  // واحد انتخابی فقط تعیین می‌کند چند عدد/قطعه فروخته شده است.
+  function price(pid){
+    const p=product(pid),d=today(),pieceUnit=p.baseUnit||'عدد';
+    const rows=A('prices').filter(x=>String(x.productId)===String(pid)&&String(x.unit||x.pricingUnit||pieceUnit)===String(pieceUnit)&&String(x.effectiveDate||'')<=String(d)).sort((a,b)=>String(b.effectiveDate||'').localeCompare(String(a.effectiveDate||'')));
+    return N(rows[0]?.price??rows[0]?.unitPrice);
+  }
+
+  function calculateSalePricing({product,unit,quantity,piecePrice,discount}){
+    const qty=N(quantity);
+    const pieces=unit==='کارتن'?qty*N(product?.unitsPerPackage||1):qty;
+    const gross=pieces*N(piecePrice);
+    const off=Math.max(0,N(discount));
+    const net=Math.max(0,gross-off);
+    return {unit:unit==='کارتن'?'کارتن':'عدد',quantity:qty,unitPrice:N(piecePrice),baseQuantity:pieces,gross,discount:off,net};
+  }
+  root.SaleUnitPricing={calculate:calculateSalePricing};
+
+  function selectedUnit(){return document.getElementById('s5-unit')?.value||'عدد'}
+  function recalc(){
+    const pid=document.getElementById('s5-product')?.value,p=product(pid),kind=selectedUnit(),qty=N(document.getElementById('s5-qty')?.value||0);
+    const piecePrice=price(pid);
+    const result=calculateSalePricing({product:p,unit:kind,quantity:qty,piecePrice,discount:N(document.getElementById('s5-discount')?.value||0)});
+    document.getElementById('s5-price').value=result.unitPrice||0;
+    document.getElementById('s5-baseqty').value=result.baseQuantity;
+    document.getElementById('s5-calc').textContent='تعداد قطعه: '+F(result.baseQuantity)+' عدد | مبلغ ناخالص: '+F(result.gross)+' | تخفیف: '+F(result.discount)+' | مبلغ نهایی: '+F(result.net);
+    return {p,unit:result.unit,qty:result.quantity,unitPrice:result.unitPrice,baseQty:result.baseQuantity,gross:result.gross,discount:result.discount,net:result.net}
+  }
   function salesPage(){
     const rows=A('sales').slice().reverse().filter(x=>!x.isDiscountDocument).map(x=>'<tr><td>'+E(x.invoiceNo||'—')+'</td><td>'+E(x.jDate||'')+'</td><td>'+E(A('people').find(p=>p.id===x.customerId)?.name||'—')+'</td><td>'+E(product(x.productId).name||'—')+'</td><td>'+E(x.salesUnit||x.unit||'عدد')+'</td><td>'+F(x.quantity)+'</td><td>'+F(x.unitPrice)+'</td><td>'+F(x.grossAmount??x.amount)+'</td><td>'+F(x.discount||0)+'</td><td>'+F(x.netAmount??x.amount)+'</td></tr>');
-    const table=rows.length?'<div class="u-table"><table><thead><tr><th>فاکتور</th><th>تاریخ</th><th>مشتری</th><th>کالا</th><th>واحد</th><th>مقدار</th><th>قیمت واحد</th><th>ناخالص</th><th>تخفیف</th><th>نهایی</th></tr></thead><tbody>'+rows.join('')+'</tbody></table></div>':'<div class="u-empty">فروشی ثبت نشده است.</div>';
-    const saleModal=modal('s5-sale','ثبت فروش',sel('مشتری','s5-customer',opts(customers(),'انتخاب مشتری'))+sel('کالا','s5-product',opts(products(),'انتخاب کالا'))+sel('واحد فروش','s5-unit','<option value="base">واحد پایه</option><option value="package">واحد دوم</option>')+inp('مقدار','s5-qty','1','number','min="0.000001" step="any"')+inp('قیمت واحد منتخب','s5-price','0','number','readonly')+inp('مقدار معادل واحد پایه','s5-baseqty','0','number','readonly')+inp('تخفیف این فاکتور','s5-discount','0','number','min="0" step="any"')+'<div id="s5-calc" class="u-calc">مقدار پایه: ۰ | ناخالص: ۰ | تخفیف: ۰ | نهایی: ۰</div>'+inp('شماره فاکتور','s5-invoice')+inp('تاریخ','s5-date',today())+'<div class="u-save">'+btn('ثبت فروش','save:sale','success')+btn('انصراف','close:s5-sale')+'</div>');
+    const table=rows.length?'<div class="u-table"><table><thead><tr><th>فاکتور</th><th>تاریخ</th><th>مشتری</th><th>کالا</th><th>واحد</th><th>مقدار</th><th>قیمت هر عدد</th><th>ناخالص</th><th>تخفیف</th><th>نهایی</th></tr></thead><tbody>'+rows.join('')+'</tbody></table></div>':'<div class="u-empty">فروشی ثبت نشده است.</div>';
+    const saleModal=modal('s5-sale','ثبت فروش',sel('مشتری','s5-customer',opts(customers(),'انتخاب مشتری'))+sel('کالا','s5-product',opts(products(),'انتخاب کالا'))+sel('واحد فروش','s5-unit','<option value="عدد">عدد</option><option value="کارتن">کارتن</option>')+inp('مقدار','s5-qty','1','number','min="0.000001" step="any"')+inp('قیمت هر عدد','s5-price','0','number','readonly')+inp('تعداد قطعه','s5-baseqty','0','number','readonly')+inp('تخفیف این فاکتور','s5-discount','0','number','min="0" step="any"')+'<div id="s5-calc" class="u-calc">تعداد قطعه: ۰ عدد | مبلغ ناخالص: ۰ | تخفیف: ۰ | مبلغ نهایی: ۰</div>'+inp('شماره فاکتور','s5-invoice')+inp('تاریخ','s5-date',today())+'<div class="u-save">'+btn('ثبت فروش','save:sale','success')+btn('انصراف','close:s5-sale')+'</div>');
     const discountModal=modal('s5-discount','تخفیف مستقل',sel('مشتری','s5-d-customer',opts(customers(),'انتخاب مشتری'))+inp('مبلغ تخفیف','s5-d-amount','0','number','min="0" step="any"')+inp('شماره مرجع','s5-d-invoice','تخفیف')+inp('تاریخ','s5-d-date',today())+inp('توضیحات','s5-d-note')+'<div class="u-note">تخفیف مستقل به‌صورت سند صفرمحصول ثبت می‌شود تا از مانده حساب مشتری کسر شود؛ در محاسبه فروش اصلی به‌عنوان قیمت کالا وارد نمی‌شود.</div><div class="u-save">'+btn('ثبت تخفیف','save:discount','success')+btn('انصراف','close:s5-discount')+'</div>');
     return '<section class="u-page"><div class="u-title"><h2>فروش و فاکتور</h2>'+btn('＋ فروش جدید','new:sale','primary')+btn('＋ تخفیف مستقل','new:discount','warning')+'</div>'+table+saleModal+discountModal+'</section>';
   }
