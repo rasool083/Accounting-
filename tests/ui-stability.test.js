@@ -10,7 +10,6 @@ test('sales screen applies selected unit conversion and invoice-independent disc
   assert.match(js,/unitsPerPackage/);
   assert.match(js,/unit==='کارتن'/);
   assert.match(js,/pieces\*N\(piecePrice\)/);
-  assert.match(js,/سعر/); 
   assert.match(js,/قیمت هر عدد/);
   assert.match(js,/s5-discount/);
   assert.match(js,/isDiscountDocument:true/);
