@@ -1,0 +1,10 @@
+/* UI consistency v5 — global modal shell; people page intentionally untouched. */
+.u-modal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;padding:12px!important;z-index:5000!important;background:rgba(15,23,42,.62)!important;backdrop-filter:blur(5px)!important}
+.u-modal.open{display:flex!important}
+.u-modal>.u-card,.u-modal>.v5-modal-card{width:min(560px,calc(100vw - 24px))!important;max-width:560px!important;max-height:92vh!important;margin:0 auto!important;position:relative!important;transform:none!important;border-radius:16px!important;overflow:hidden!important;box-shadow:0 24px 80px rgba(2,8,23,.34)!important}
+.u-modal .u-body{max-height:calc(92vh - 58px)!important;overflow-y:auto!important;overflow-x:hidden!important}
+.u-modal .u-field{min-width:0!important}
+.u-modal input,.u-modal select,.u-modal textarea{max-width:100%!important;min-width:0!important}
+.pp-status{display:inline-flex;align-items:center;justify-content:center;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}
+.pp-status.on{background:#dcfce7;color:#166534}.pp-status.off{background:#fee2e2;color:#991b1b}
+@media(max-width:560px){.u-modal{padding:7px!important}.u-modal>.u-card,.u-modal>.v5-modal-card{width:calc(100vw - 14px)!important;max-width:none!important;max-height:94vh!important;border-radius:14px!important}.u-modal .u-body{max-height:calc(94vh - 54px)!important;padding:10px!important}.u-modal .u-head{padding:10px 11px!important}.u-modal .u-head b{font-size:13px!important}.u-modal .u-close{width:30px!important;height:30px!important}}
