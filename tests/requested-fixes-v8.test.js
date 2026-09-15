@@ -6,7 +6,7 @@ const {Finance}=require('../domain.js');
 test('invoice payment package controls the tier multiplier',()=>{
   const packages=[{id:'PKG-A',dayBasis:30,tiers:[{maxDays:30,rate:0,active:true},{maxDays:60,rate:.06,active:true}]}];
   const out=Finance.fifo({customerId:'C1',calcDate:'1405/07/16',settings:{dayBasis:30,tiers:[]},paymentPackages:packages,
-    sales:[{id:'S1',customerId:'C1',jDate:'1405/06/01',amount:100,paymentPackageId:'PKG-A'}],
+    sales:[{id:'S1',customerId:'C1',jDate:'1405/06/02',amount:100,paymentPackageId:'PKG-A'}],
     receipts:[{id:'R1',customerId:'C1',jDate:'1405/07/16',amount:104.5,status:'نزد ما'}]});
   assert.equal(out.receiptAllocations.length,1);
   assert.equal(out.receiptAllocations[0].DurationDays,45);
