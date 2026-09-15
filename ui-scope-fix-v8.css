@@ -1,0 +1,9 @@
+/* Scoped UI fix v8: only requested corrections. */
+.u-modal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;padding:10px!important;z-index:20000!important;background:rgba(15,23,42,.58)!important;backdrop-filter:blur(5px)!important}
+.u-modal.open{display:flex!important}
+.u-modal>.u-card,.u-modal>.v5-modal-card{width:min(500px,calc(100vw - 20px))!important;max-width:500px!important;max-height:92vh!important;margin:0 auto!important;transform:none!important;overflow:hidden!important;border-radius:16px!important;box-sizing:border-box!important}
+.u-modal .u-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important}
+.u-modal .u-body{max-height:calc(92vh - 56px)!important;overflow-y:auto!important;overflow-x:hidden!important;box-sizing:border-box!important}
+.u-modal input,.u-modal select,.u-modal textarea{width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+.s8-tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.s8-tier-grid .u-cardbox{padding:10px}.u-row{transition:background .15s}.u-row.received{background:rgba(34,197,94,.055)}.u-row.paid{background:rgba(239,68,68,.055)}.u-row.collected{background:rgba(34,197,94,.10)}.u-row.returned{background:rgba(239,68,68,.13)}
+@media(max-width:560px){.u-modal{padding:6px!important}.u-modal>.u-card,.u-modal>.v5-modal-card{width:calc(100vw - 12px)!important;max-height:95vh!important;border-radius:14px!important}.u-modal .u-body{max-height:calc(95vh - 52px)!important;padding:10px!important}.s8-tier-grid{grid-template-columns:1fr}}
