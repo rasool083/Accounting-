@@ -1,0 +1,16 @@
+/* UI consistency patch v1: one centered, compact modal system */
+.u-modal{position:fixed!important;inset:0!important;display:none!important;align-items:center!important;justify-content:center!important;padding:12px!important;overflow:auto!important;z-index:9999!important;background:rgba(15,23,42,.62)!important}
+.u-modal.open{display:flex!important}
+.u-modal>.u-card{margin:auto!important;width:min(520px,calc(100vw - 24px))!important;max-width:520px!important;max-height:min(90vh,760px)!important;overflow:hidden!important;border-radius:16px!important}
+.u-modal .u-body{overflow-y:auto!important;max-height:calc(min(90vh,760px) - 62px)!important;padding:14px!important}
+.u-modal .u-head{position:sticky!important;top:0!important;z-index:1!important}
+.u-field input,.u-field select,.u-field textarea{max-width:100%!important;min-width:0!important}
+.u-save{position:sticky!important;bottom:0!important;background:#fff!important;padding-top:10px!important}
+@media(max-width:520px){.u-modal{padding:8px!important}.u-modal>.u-card{width:calc(100vw - 16px)!important;max-height:94vh!important;border-radius:13px!important}.u-modal .u-body{max-height:calc(94vh - 58px)!important;padding:11px!important}.u-modal .u-head b{font-size:13px!important}}
+/* Keep long tables inside their own scroll area instead of breaking the page */
+.u-table{max-width:100%;overflow-x:auto!important}
+.u-page{min-width:0!important;overflow:visible!important}
+/* Explicit semantic row colors for transaction/check lists */
+.u-row.received td,.u-row.collected td{background:#f0fdf4!important}
+.u-row.paid td{background:#fffbeb!important}
+.u-row.returned td{background:#fff1f2!important;color:#991b1b!important}
