@@ -1,0 +1,14 @@
+/* Final UI contract v12 */
+:root{--ui-bg:#f3f6fb;--ui-line:#dbe3ee;--ui-text:#172033}
+html,body{margin:0;min-height:100%;background:var(--ui-bg);color:var(--ui-text);overflow-x:hidden}
+#app,#main{width:100%;min-height:100%;box-sizing:border-box}
+.u-modal,.u11-modal{position:fixed!important;inset:0!important;z-index:100000!important;display:none!important;align-items:center!important;justify-content:center!important;padding:8px!important;background:rgba(15,23,42,.64)!important;backdrop-filter:blur(5px);box-sizing:border-box}
+.u-modal.open,.u11-modal.open{display:flex!important}
+.u-modal .u-card,.u11-dialog{width:min(520px,calc(100vw - 14px))!important;max-height:94vh!important;margin:0 auto!important;position:relative!important;inset:auto!important;border:1px solid var(--ui-line)!important;border-radius:16px!important;background:#fff!important;box-shadow:0 24px 90px rgba(2,8,23,.28)!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+.u-head,.u11-dialog-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:13px 15px!important;background:#fbfdff!important;border-bottom:1px solid var(--ui-line)!important}
+.u-body,.u11-dialog-body{padding:12px!important;overflow-y:auto!important;overflow-x:hidden!important;box-sizing:border-box!important;min-width:0!important}
+.u-field,.u11-field{min-width:0!important;box-sizing:border-box!important}.u-field input,.u-field select,.u-field textarea,.u11-field input,.u11-field select,.u11-field textarea{max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+.u-table,.u11-panel{max-width:100%;overflow-x:auto!important}.u-table table,.u11-table{min-width:680px}
+.u-save,.u-dialog-foot,.u11-dialog-foot{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin-top:12px!important}
+.u-page{width:min(1180px,100%);margin:0 auto;padding:10px;box-sizing:border-box}
+@media(max-width:700px){.u-page{padding:7px}.u-body,.u11-dialog-body{padding:10px!important}.u-modal .u-card,.u11-dialog{border-radius:14px!important}}
